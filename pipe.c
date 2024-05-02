@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
  //creazione di un file
  FILE *file;
- unsigned char buffer[BLOCK_DIM];
+ char buffer[BLOCK_DIM];
  int n;
  int pid, status;
  int p[2];// vettore per descrittori estremità pipe
@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
   //lettura del file di blocchi di dati e inserimento nella pipe
   while ((n = fread(buffer, 1, sizeof(buffer), file)) > 0)
        write(p[1], buffer, n);
+     
   fclose(file);//chiusura file
   close(p[1]);//chiusura entrata pipe
   wait(&status);//attesa terminazione processo figlio
@@ -58,6 +59,7 @@ int main(int argc, char* argv[])
  }
  else
      {
+
      	//processo filgio
       close(p[1]);//chiusura entrata pipe
       //apertura in scrittura del file
@@ -72,7 +74,12 @@ int main(int argc, char* argv[])
       //estrazione dalla pipe di blocchi di dati e scrittura nel file
       while ((n = read(p[0], buffer, sizeof(buffer))) > 0)
 		   fwrite(buffer, 1, n, file);
-	  fclose(file);
+	   printf(buffer);//visualizzazione domande
+       for (int i=0; i<3; i++){
+           printf("Risposta %d"+i+1);
+           fgets(buffer, sizeof(buffer),stdin);
+           fprintf(file,"%s",buffer);
+       }fclose(file);
 	  close(p[0]);//chiusura entrata pipe
       return 1;//terminazione processo figlio
      }
